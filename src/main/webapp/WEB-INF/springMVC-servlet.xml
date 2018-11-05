@@ -25,17 +25,7 @@
     </mvc:annotation-driven>
 
     <!-- 拦截器，在过滤器之后执行 -->
-    <mvc:interceptors>
-        <mvc:interceptor>
-            <!--拦截器mapping 符合的才会执行拦截器-->
-            <mvc:mapping path="/**"/>
-            <!--在拦截器mapping中除去下面的url -->
-            <mvc:exclude-mapping path="/login.*"/>
-            <mvc:exclude-mapping path="/register.*"/>
-            <!--执行的拦截器-->
-            <bean class="com.ssm.controller.LoginInterceptor"/>
-        </mvc:interceptor>
-    </mvc:interceptors>
+
 
     <!--配置返回值转换器-->
     <bean id="contentNegotiationManagerFactoryBean"

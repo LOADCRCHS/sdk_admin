@@ -60,4 +60,5 @@ public class MenuTO {
     public void setChildren(List<MenuTO> children) {
         this.children = children;
     }
+
 }
