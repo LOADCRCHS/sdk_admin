@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.dao.AdminUserDao">
+
+    <select id="getUserList" parameterType="AdminUserTO" resultType="AdminUserTO">
+        select ID,EMAIL,REAL_NAME realName,STATUS
+        from ADMIN_USER
+        <where>
+            <if test="id!=null">and id=#{id}</if>
+            <if test="status!=null">and status=#{status}</if>
+            <if test="email!=null and email!=''">EMAIL=#{email}</if>
+            <if test="realName!=null and realName!=''">AND real_name like concat('%',#{realName},'%')</if>
+        </where>
+    </select>
+</mapper>
+    

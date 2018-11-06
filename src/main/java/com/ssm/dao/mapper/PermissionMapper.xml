@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.PermissionDao">
+    <insert id="addRolePermission">
+        INSERT INTO ROLE_PERMISSION (MENU_ID, ROLE_ID)
+        VALUES (#{menuId}, #{roleId})
+    </insert>
+
+    <delete id="deleteRolePermissionByRoleId">
+        DELETE
+        FROM ROLE_PERMISSION
+        WHERE ROLE_ID = #{roleId}
+    </delete>
+
+    <select id="getRolePermissionByRoleId" parameterType="int" resultType="int">
+        SELECT MENU_ID
+        FROM ROLE_PERMISSION
+        WHERE ROLE_ID = #{roleId}
+    </select>
+
+    <delete id="deleteUserRoleByUserId" parameterType="int">
+        DELETE
+        FROM USER_ROLE
+        WHERE USER_ID = #{userId}
+    </delete>
+
+    <select id="getUserRoleByUserId" parameterType="int" resultType="int">
+        SELECT ROLE_ID
+        FROM USER_ROLE
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <insert id="addUserRole">
+        INSERT INTO USER_ROLE (USER_ID, ROLE_ID)
+        VALUES (#{userId}, #{roleId})
+    </insert>
+</mapper>

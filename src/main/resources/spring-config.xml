@@ -22,6 +22,19 @@
         <property name="dataSource" ref="adminDataSource"/>
         <property name="mapperLocations" value="classpath:com/ssm/dao/mapper/*.xml"/>
         <property name="typeAliasesPackage" value="com.ssm.pojo"/>
+        <!--mybatis 的pageHelper插件-->
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageHelper">
+                    <property name="properties">
+                        <value>
+                            dialect=mysql
+                            reasonable=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
@@ -31,6 +44,8 @@
     <context:component-scan base-package="com.ssm.service.impl">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
+
+
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="adminDataSource"/>
