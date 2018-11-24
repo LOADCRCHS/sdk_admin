@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.dao.core.GameDao">
+
+    <select id="getAllGameList" resultType="GameTO">
+        select ID,
+               CP_ID          cpId,
+               SEQ_NUM        seqNum,
+               NAME,
+               GAME_CATEGORY_ID,
+               DESCRIPTION,
+               GAME_STATE,
+               STATUS,
+               UPDATE_DATE,
+               CREATED_DATE,
+               REPAIR_STATUS  repairStatus,
+               REPAIR_CONTENT repairContent,
+               VERSION,
+               DOWNLOAD_URL
+        from GAME
+        <where>
+            <if test="id!=null">and id=#{id}</if>
+            <if test="status!=null">and status=#{status}</if>
+            <if test="name!=null and name!=''">AND name like concat('%',#{name},'%')</if>
+            <if test="cpId!=null">and CP_ID=#{cpId}</if>
+        </where>
+    </select>
+
+    <select id="getServerIdByGameAndSeq" resultType="int" parameterType="Map">
+        select ID
+        from GAME_SERVER
+        where GAME_ID = #{gameId}
+          and SEQ_NUM = #{seqNum}
+          and STATUS = 1
+    </select>
+
+    <insert id="addGame" parameterType="GameTO">
+        insert into game (cp_id,
+                          seq_num,
+                          name,
+                          game_category_id,
+                          description,
+                          game_state,
+                          status,
+                          update_date,
+                          created_date,
+                          repair_status,
+                          repair_content,
+                          version,
+                          download_url)
+        values (#{cpId},
+                #{seqNum},
+                #{name},
+                #{game_category_id},
+                #{description},
+                #{game_state},
+                #{status},
+                #{update_date},
+                now(),
+                #{repair_status},
+                #{repair_content},
+                #{version},
+                #{download_url});
+    </insert>
+
+</mapper>
