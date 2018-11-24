@@ -1,6 +1,7 @@
 package com.ssm.service.impl;
 
-import com.ssm.dao.MenuDao;
+import com.ssm.dao.admin.MenuDao;
+import com.ssm.dao.admin.PermissionDao;
 import com.ssm.pojo.MenuTO;
 import com.ssm.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,29 +17,43 @@ public class MenuServiceImpl implements MenuService {
     @Autowired
     private MenuDao menuDao;
 
+    @Autowired
+    private PermissionDao permissionDao;
+
     @Override
     public List<MenuTO> getTreeMenu() {
-        //todo
         List<MenuTO> menus = menuDao.getAllMenu();
-        List<MenuTO> firstMenus = new ArrayList<>();
+        return makeMenuTree(menus);
+    }
+
+    @Override
+    public List<MenuTO> getTreeMenu(Integer id) {
+        List<MenuTO> menus = permissionDao.getUserMenu(id);
+        return makeMenuTree(menus);
+    }
+
+    private List<MenuTO> makeMenuTree(List<MenuTO> menus) {
+        List<MenuTO> firstMenu = new ArrayList<>();//一级菜单
         Map<Integer, MenuTO> menuMap = new HashMap<>();
         for (MenuTO menu : menus) {
             menu.getAttributes().put("url", menu.getUrl());
             menu.getAttributes().put("parentId", menu.getParentId());
             menuMap.put(menu.getId(), menu);
-            if (menu.getParentId() == 1) {
-                firstMenus.add(menu);
+
+            if (menu.getParentId() != null && menu.getParentId() == 1) {
+                firstMenu.add(menu);
             }
         }
-        for (MenuTO menu : menus) {
-            if (menu.getParentId() > 1) {
-                MenuTO parentMenu = menuMap.get(menu.getParentId());
-                if (parentMenu != null) {
-                    parentMenu.getChildren().add(menu);
+        for (MenuTO menu : menus) {//组装树形菜单
+            if (menu.getParentId() != null && menu.getParentId() > 1) {
+                MenuTO parent = menuMap.get(menu.getParentId());
+                if (parent != null) {
+                    parent.getChildren().add(menu);
                 }
             }
         }
-        return firstMenus;
+
+        return firstMenu;
     }
 
     @Override

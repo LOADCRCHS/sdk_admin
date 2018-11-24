@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ssm.dao.PermissionDao">
+<mapper namespace="com.ssm.dao.admin.PermissionDao">
     <insert id="addRolePermission">
         INSERT INTO ROLE_PERMISSION (MENU_ID, ROLE_ID)
         VALUES (#{menuId}, #{roleId})
@@ -26,6 +26,12 @@
         WHERE USER_ID = #{userId}
     </delete>
 
+    <select id="getRoleIdByMenuId" parameterType="int" resultType="int">
+        SELECT ROLE_ID
+        FROM ROLE_PERMISSION
+        WHERE MENU_ID = #{menuId}
+    </select>
+
     <select id="getUserRoleByUserId" parameterType="int" resultType="int">
         SELECT ROLE_ID
         FROM USER_ROLE
@@ -36,4 +42,12 @@
         INSERT INTO USER_ROLE (USER_ID, ROLE_ID)
         VALUES (#{userId}, #{roleId})
     </insert>
+
+    <select id="getUserMenu" resultType="MenuTO" parameterType="int">
+        SELECT m.ID,M.NAME text,M.PARENT_ID parentId,M.URL
+        FROM user_role ur
+                 inner join role_permission rm on ur.ROLE_ID=rm.role_id
+                 inner join menu m on m.id=rm.menu_id
+        where ur.user_id=#{userId}
+    </select>
 </mapper>

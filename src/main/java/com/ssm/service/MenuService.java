@@ -9,6 +9,8 @@ public interface MenuService {
 
     List<MenuTO> getTreeMenu();
 
+    List<MenuTO> getTreeMenu(Integer id);
+
     void addMenu(MenuTO menu);
 
     void updateMenu(MenuTO menu);

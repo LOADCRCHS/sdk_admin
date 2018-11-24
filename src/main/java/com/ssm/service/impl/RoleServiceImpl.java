@@ -1,9 +1,10 @@
 package com.ssm.service.impl;
 
-import com.ssm.dao.PermissionDao;
-import com.ssm.dao.RoleDao;
+import com.ssm.dao.admin.PermissionDao;
+import com.ssm.dao.admin.RoleDao;
 import com.ssm.pojo.RoleTO;
 import com.ssm.service.RoleService;
+import com.ssm.shiro.AdminShiroFilterFactoryBean;
 import com.ssm.util.AdminConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,9 @@ public class RoleServiceImpl implements RoleService {
         return permissionDao.getRolePermissionByRoleId(roleId);
     }
 
+    @Autowired
+    private AdminShiroFilterFactoryBean adminShiroFilterFactoryBeanl;
+
     @Override
     public void addPermission(Integer roleId, Integer[] menuIds) {
         permissionDao.deleteRolePermissionByRoleId(roleId);
@@ -60,5 +64,7 @@ public class RoleServiceImpl implements RoleService {
                 permissionDao.addRolePermission(roleId, menuId);
             }
         }
+        //动态更新shiro过滤链
+        adminShiroFilterFactoryBeanl.update();
     }
 }

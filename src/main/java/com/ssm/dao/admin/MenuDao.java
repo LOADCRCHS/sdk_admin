@@ -1,4 +1,4 @@
-package com.ssm.dao;
+package com.ssm.dao.admin;
 
 import com.ssm.pojo.MenuTO;
 

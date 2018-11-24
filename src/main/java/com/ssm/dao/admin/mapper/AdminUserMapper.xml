@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ssm.dao.admin.AdminUserDao">
+
+    <update id="updateAdminUser" parameterType="AdminUserTO">
+        update admin_user
+        set EMAIL     = #{email},
+        REAL_NAME = #{realName},
+        STATUS    = #{status},
+        <if test="password!=null and password!=''">
+            PASSWORD  = #{password}
+        </if>
+        where ID = #{id};
+    </update>
+
+    <select id="getUserList" parameterType="AdminUserTO" resultType="AdminUserTO">
+        select ID,EMAIL,REAL_NAME realName,STATUS
+        from ADMIN_USER
+        <where>
+            <if test="id!=null">and id=#{id}</if>
+            <if test="status!=null">and status=#{status}</if>
+            <if test="email!=null and email!=''">EMAIL=#{email}</if>
+            <if test="realName!=null and realName!=''">AND real_name like concat('%',#{realName},'%')</if>
+        </where>
+    </select>
+
+    <select id="getUserByEmail" resultType="AdminUserTO" parameterType="string">
+        select ID, EMAIL, REAL_NAME realName, STATUS, PASSWORD
+        from ADMIN_USER
+        where EMAIL = #{email}
+    </select>
+
+    <insert id="addAdminUser" parameterType="AdminUserTO">
+        insert into admin_user (EMAIL, REAL_NAME, STATUS, PASSWORD)
+        values (#{email}, #{realName}, #{status}, #{password});
+    </insert>
+
+    <select id="getUserByEmailAndPwd" resultType="AdminUserTO">
+        select ID, EMAIL, REAL_NAME realName, STATUS, PASSWORD
+        from admin_user where EMAIL=#{email} and PASSWORD=#{password};
+    </select>
+
+    <update id="deleteUserAdmin" parameterType="int">
+        update admin_user
+        set STATUS = 0
+        where id=#{id};
+    </update>
+
+</mapper>
+
+    

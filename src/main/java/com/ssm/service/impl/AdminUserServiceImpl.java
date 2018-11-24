@@ -2,10 +2,12 @@ package com.ssm.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.ssm.dao.AdminUserDao;
-import com.ssm.dao.PermissionDao;
+import com.ssm.dao.admin.AdminUserDao;
+import com.ssm.dao.admin.PermissionDao;
 import com.ssm.pojo.AdminUserTO;
+import com.ssm.sdk.common.util.DigestUtils;
 import com.ssm.service.AdminUserService;
+import com.ssm.util.AdminConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,16 +43,29 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public void deleteUserAdmin(Integer id) {
+        adminUserDao.deleteUserAdmin(id);
         //todo ...
     }
 
     @Override
     public void addAdminUser(AdminUserTO adminUserTO) {
-        //todo ...
+        String password_md5 = DigestUtils.getMD5(adminUserTO.getPassword() + AdminConstants.PASSWORD_SALT_KEY);
+        adminUserTO.setPassword(password_md5);
+        adminUserDao.addAdminUser(adminUserTO);
     }
 
     @Override
     public void updateAdminUser(AdminUserTO adminUserTO) {
-        //todo ...
+        if(adminUserTO.getPassword()!=null){
+            String password_md5 = DigestUtils.getMD5(adminUserTO.getPassword() + AdminConstants.PASSWORD_SALT_KEY);
+            adminUserTO.setPassword(password_md5);
+        }
+        adminUserDao.updateAdminUser(adminUserTO);
+    }
+
+    @Override
+    public AdminUserTO doLogin(String email, String password) {
+        password = DigestUtils.getMD5(password + AdminConstants.PASSWORD_SALT_KEY);
+        return adminUserDao.getUserByEmailAndPwd(email, password);
     }
 }

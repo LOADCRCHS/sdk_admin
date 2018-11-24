@@ -17,4 +17,6 @@ public interface AdminUserService {
     void addAdminUser(AdminUserTO adminUserTO);
 
     void updateAdminUser(AdminUserTO adminUserTO);
+
+    AdminUserTO doLogin(String email, String password);
 }

@@ -32,21 +32,21 @@
             <li class="layui-nav-item">
                 <a href="javascript:;">
                     <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
-                    贤心
+                    ${sessionScope.SESSION_USER.email}
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a href="">基本资料</a></dd>
                     <dd><a href="">安全设置</a></dd>
                 </dl>
             </li>
-            <li class="layui-nav-item"><a href="">退了</a></li>
+            <li class="layui-nav-item"><a href="logout.html">退了</a></li>
         </ul>
     </div>
 
     <div class="layui-side layui-bg-black">
         <div class="layui-side-scroll">
             <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                <c:forEach items="${menus}" var="menu">
+                <c:forEach items="${sessionScope.SESSION_MENU}" var="menu">
                     <li class="layui-nav-item">
                         <c:choose>
                             <c:when test="${empty menu.children}">
@@ -59,7 +59,7 @@
                                         <c:if test="${empty child.children}">
                                             <dd>
                                                 <a href="javascript:;"
-                                                   onclick="$('#main-content').load('<%=request.getContextPath()%>/${child.url}')">
+                                                   onclick="$('#main-content').load('<%=request.getContextPath()%>${child.url}')">
                                                     &nbsp;&nbsp;${child.text}
                                                 </a>
                                             </dd>
@@ -71,7 +71,7 @@
                                                     <c:forEach items="${child.children}" var="sumChild">
                                                         <dd>
                                                             <a href="javascript:;"
-                                                               onclick="$('#main-content').load('${pageContext.request.contextPath}/${sumChild.url}')">&nbsp;&nbsp;&nbsp;&nbsp;${sumChild.text}</a>
+                                                               onclick="$('#main-content').load('${pageContext.request.contextPath}${sumChild.url}')">&nbsp;&nbsp;&nbsp;&nbsp;${sumChild.text}</a>
                                                         </dd>
                                                     </c:forEach>
                                                 </dl>

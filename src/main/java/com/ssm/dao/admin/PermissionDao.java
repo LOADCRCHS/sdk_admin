@@ -1,5 +1,6 @@
-package com.ssm.dao;
+package com.ssm.dao.admin;
 
+import com.ssm.pojo.MenuTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -16,6 +17,9 @@ public interface PermissionDao {
 
     List<Integer> getUserRoleByUserId(Integer userId);
 
-
     void deleteUserRoleByUserId(Integer userId);
+
+    List<MenuTO> getUserMenu(Integer id);
+
+    List<Integer> getRoleIdByMenuId(Integer id);
 }
