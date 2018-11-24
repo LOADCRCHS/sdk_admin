@@ -1,0 +1,112 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+    <context:property-placeholder location="classpath:jdbc.properties" ignore-unresolvable="true"/>
+
+    <bean id="coreDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <bean id="coreSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="coreDataSource"/>
+        <property name="mapperLocations" value="classpath:com/ssm/dao/core/mapper/*.xml"/>
+        <property name="typeAliasesPackage" value="com.ssm.sdk.common.pojo"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageHelper">
+                    <property name="properties">
+                        <value>
+                            dialect=mysql
+                            reasonable=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+
+    <bean id="adminDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.admin.driver}"/>
+        <property name="url" value="${jdbc.admin.url}"/>
+        <property name="username" value="${jdbc.admin.username}"/>
+        <property name="password" value="${jdbc.admin.password}"/>
+    </bean>
+
+    <bean id="adminSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="adminDataSource"/>
+        <property name="mapperLocations" value="classpath:com/ssm/dao/admin/mapper/*.xml"/>
+        <property name="typeAliasesPackage" value="com.ssm.pojo"/>
+        <!--mybatis 的pageHelper插件-->
+        <property name="plugins">
+            <array>
+                <bean class="com.github.pagehelper.PageHelper">
+                    <property name="properties">
+                        <value>
+                            dialect=mysql
+                            reasonable=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.ssm.dao.admin"/>
+        <property name="sqlSessionFactoryBeanName" value="adminSqlSessionFactory"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.ssm.dao.core"/>
+        <property name="sqlSessionFactoryBeanName" value="coreSqlSessionFactory"/>
+    </bean>
+
+
+    <context:component-scan base-package="com.ssm.service.impl">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+    </context:component-scan>
+
+
+    <bean id="adminTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="adminDataSource"/>
+    </bean>
+
+    <bean id="coreTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="coreDataSource"/>
+    </bean>
+
+    <tx:advice id="txCoreAdvice" transaction-manager="coreTransactionManager">
+        <tx:attributes>
+            <tx:method name="add*" rollback-for="Exception"/>
+            <tx:method name="delete*" rollback-for="Exception"/>
+            <tx:method name="update*" rollback-for="Exception"/>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <tx:advice id="txAdminAdvice" transaction-manager="adminTransactionManager">
+        <tx:attributes>
+            <tx:method name="add*" rollback-for="Exception"/>
+            <tx:method name="delete*" rollback-for="Exception"/>
+            <tx:method name="update*" rollback-for="Exception"/>
+            <tx:method name="get*" propagation="SUPPORTS" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <aop:pointcut id="point" expression="execution(* com.ssm.service..*(..))"/>
+        <aop:advisor advice-ref="txCoreAdvice" pointcut-ref="point"/>
+        <aop:advisor advice-ref="txAdminAdvice" pointcut-ref="point"/>
+    </aop:config>
+</beans>

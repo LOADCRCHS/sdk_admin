@@ -1,0 +1,45 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+    <!--注入自定义的Realm-->
+    <bean id="myShiroRealm" class="com.ssm.shiro.MyShiroRealm"/>
+    <!-- shiro的缓存 -->
+    <bean id="cacheManager" class="org.apache.shiro.cache.MemoryConstrainedCacheManager"/>
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="myShiroRealm"/>
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+
+    <!--Shiro过滤器-->
+    <bean id="shiroFilter" class="com.ssm.shiro.AdminShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/noauth/gologin.html"/>
+        <!--登录成功的跳转地址-->
+        <property name="successUrl" value="/noauth/index.html"/>
+        <!--验证失败的跳转地址-->
+        <property name="unauthorizedUrl" value="/noauth/auth_error.html"/>
+        <!--静态的条件,登录不验证 配置url时必须在前面加 / -->
+        <property name="filterChainDefinitions">
+            <value>
+                /noauth/gologin.html = anon
+                /noauth/login.html = anon
+            </value>
+        </property>
+        <property name="filters">
+            <map>
+                <entry key="roles">
+                    <bean class="com.ssm.shiro.AdminShiroFilter"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+</beans>
